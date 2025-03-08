@@ -19,7 +19,7 @@ public class CarsController {
 
     @GetMapping
     public ResponseEntity<List<Car>> getCars() {
-        return ResponseEntity.status(HttpStatus.OK).body(carService.getCars());
+        return ResponseEntity.status(HttpStatus.OK).body(carService.listCars());
     }
 
     @GetMapping("/{id}")

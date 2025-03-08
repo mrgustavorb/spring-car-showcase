@@ -3,6 +3,7 @@ package com.example.car_showcase.service;
 import com.example.car_showcase.model.Car;
 import com.example.car_showcase.repository.CarRepository;
 import com.example.car_showcase.exception.ResourceNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class CarService {
         this.carRepository = carRepository;
     }
 
-    public List<Car> getCars() {
+    public List<Car> listCars() {
         return carRepository.findAll();
     }
 
@@ -36,7 +37,7 @@ public class CarService {
 
     public void deleteCar(Long id) {
         Car car = carRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Carro " + id + " não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Carro não encontrado"));
 
         carRepository.delete(car);
     }
