@@ -3,6 +3,7 @@ package com.example.car_showcase.controller;
 import com.example.car_showcase.model.Car;
 import com.example.car_showcase.model.Manufacturer;
 import com.example.car_showcase.request.CarRequest;
+import com.example.car_showcase.response.CarResponse;
 import com.example.car_showcase.service.CarService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,40 +21,95 @@ public class CarsController {
     private CarService carService;
 
     @GetMapping
-    public ResponseEntity<List<Car>> getCars() {
-        return ResponseEntity.status(HttpStatus.OK).body(carService.listCars());
+    public ResponseEntity<List<CarResponse>> getCars() {
+        List<Car> cars = carService.listCars();
+
+        List<CarResponse> response = cars.stream()
+                .map(this::buildResponse)
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Car>> getCarById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(carService.getCarById(id));
+    public ResponseEntity<CarResponse> getCarById(@PathVariable Long id) {
+        Optional<Car> car = carService.getCarById(id);
+
+        if(car.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        CarResponse response = buildResponse(car.orElse(null));
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
-    public ResponseEntity<Car> createCar(@RequestBody CarRequest carRequest) {
+    public ResponseEntity<CarResponse> createCar(@RequestBody CarRequest carRequest) {
         Optional<Manufacturer> manufacturer = carService.getManufacturerById(carRequest.getManufacturerId());
 
         if (manufacturer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Return 400 if manufacturer is not found
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        Car car = new Car();
-        car.setManufacturer(manufacturer.get());
-        car.setName(carRequest.getName());
-        car.setYear(carRequest.getYear());
+        Car car = buildCar(carRequest, manufacturer);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(carService.createCar(car));
+        carService.createCar(car);
+
+        CarResponse response = buildResponse(car);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Car> updateCar(@PathVariable Long id, @NotNull @RequestBody Car car) {
+    public ResponseEntity<CarResponse> updateCar(@PathVariable Long id, @NotNull @RequestBody Car car) {
+        Optional<Car> persistedCar = carService.getCarById(id);
+
+        if(persistedCar.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (car.getManufacturerId() == null) {
+            car.setManufacturer(persistedCar.get().getManufacturer());
+        }
+
         car.setId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(carService.updateCar(car));
+        car.setCreatedAt(persistedCar.get().getCreatedAt());
+
+        carService.updateCar(car);
+
+        CarResponse response = buildResponse(car);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
         carService.deleteCar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    public Car buildCar(CarRequest carRequest, Optional<Manufacturer> manufacturer) {
+        Car car = new Car();
+
+        if(manufacturer.isEmpty()) {
+            return car;
+        }
+
+        car.setManufacturer(manufacturer.get());
+        car.setName(carRequest.getName());
+        car.setYear(carRequest.getYear());
+
+        return car;
+    }
+
+    private CarResponse buildResponse(Car car) {
+        return new CarResponse(
+                car.getId(),
+                car.getName(),
+                car.getYear(),
+                car.getManufacturer().getId(),
+                car.getCreatedAt(),
+                car.getUpdatedAt()
+        );
     }
 }

@@ -5,6 +5,7 @@ import com.example.car_showcase.response.ManufacturerCarsResponse;
 import com.example.car_showcase.response.ManufacturerResponse;
 import com.example.car_showcase.service.ManufacturerService;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,9 @@ public class ManufacturersController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ManufacturerResponse> updateManufacturer(@PathVariable Long id, @NotNull @RequestBody Manufacturer manufacturer) {
+    public ResponseEntity<ManufacturerResponse> updateManufacturer(
+            @PathVariable Long id, @NotNull @RequestBody Manufacturer manufacturer
+    ) {
         Optional<Manufacturer> existingManufacturer = manufacturerService.getManufacturerById(id);
 
         if (existingManufacturer.isEmpty()) {
@@ -79,15 +82,17 @@ public class ManufacturersController {
 
     @GetMapping("/{id}/cars")
     public ResponseEntity<ManufacturerCarsResponse> listCarsByManufacturerId(@PathVariable Long id) {
-        Optional<Manufacturer> manufacturer = manufacturerService.getManufacturerById(id);
+        Optional<Manufacturer> manufacturer = manufacturerService.getManufacturerAndCarsById(id);
 
         if (manufacturer.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
+        manufacturer.ifPresent(m -> Hibernate.initialize(m.getCars()));
 
         ManufacturerCarsResponse response = buildManufacturerCarsResponse(manufacturer.orElse(null));
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.ok(response);
     }
 
     private ManufacturerResponse buildResponse(Manufacturer manufacturer) {

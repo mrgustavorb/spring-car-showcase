@@ -6,12 +6,12 @@ import com.example.car_showcase.repository.ManufacturerRepository;
 import com.example.car_showcase.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Service
 public class ManufacturerService {
     private final ManufacturerRepository manufacturerRepository;
 
@@ -44,5 +44,9 @@ public class ManufacturerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Fabricante não encontrado"));
 
         manufacturerRepository.delete(manufacturer);
+    }
+
+    public Optional<Manufacturer> getManufacturerAndCarsById(Long id) {
+        return manufacturerRepository.findByIdWithCars(id);
     }
 }

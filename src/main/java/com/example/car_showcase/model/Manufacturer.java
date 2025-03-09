@@ -1,15 +1,16 @@
 package com.example.car_showcase.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "manufacturers")
 public class Manufacturer extends BaseEntity {
 
-    @OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Car> cars;
 
     @Column(nullable = false)
@@ -21,6 +22,7 @@ public class Manufacturer extends BaseEntity {
     @Column(nullable = false)
     private Integer year;
 
+    // Getters and Setters
     public String getName() {
         return name;
     }

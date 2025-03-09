@@ -1,8 +1,6 @@
 package com.example.car_showcase.response;
 
 import com.example.car_showcase.model.Car;
-import com.example.car_showcase.model.Manufacturer;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +17,12 @@ public class ManufacturerCarsResponse extends ManufacturerResponse {
             LocalDateTime updatedAt,
             List<Car> cars
     ) {
-        super();
+        super(id, year, name, country, createdAt, updatedAt);
         this.cars = cars;
+    }
+
+    // Getter for cars
+    public List<Car> getCars() {
+        return cars;
     }
 }

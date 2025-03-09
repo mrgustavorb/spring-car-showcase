@@ -1,17 +1,14 @@
 package com.example.car_showcase.response;
 
-import com.example.car_showcase.model.Manufacturer;
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 
 public class ManufacturerResponse {
-    public Long id;
-    public Integer year;
-    public String name;
-    public String country;
-    public LocalDateTime createdAt;
-    public LocalDateTime updatedAt;
+    private Long id;
+    private Integer year;
+    private String name;
+    private String country;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public ManufacturerResponse(
             Long id,
@@ -29,9 +26,28 @@ public class ManufacturerResponse {
         this.updatedAt = updatedAt;
     }
 
-    public ManufacturerResponse() {
+    // Getters
+    public Long getId() {
+        return id;
     }
 
-    public ManufacturerResponse(@NotNull Manufacturer manufacturer) {
+    public Integer getYear() {
+        return year;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
