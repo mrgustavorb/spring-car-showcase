@@ -3,6 +3,7 @@ package com.example.car_showcase.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,7 +12,7 @@ public class Manufacturer extends BaseEntity {
 
     @OneToMany(mappedBy = "manufacturer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Car> cars;
+    private List<Car> cars = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
