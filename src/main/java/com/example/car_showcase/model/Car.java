@@ -7,15 +7,13 @@ import jakarta.persistence.*;
 public class Car extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name="manufacturer_id")
+    @JoinColumn(name="manufacturer_id", nullable = false)
     private Manufacturer manufacturer;
 
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
     private Integer year;
-    @Column(nullable = false, insertable=false, updatable=false)
-    private Integer manufacturer_id;
 
     public String getName() {
         return name;
@@ -33,19 +31,11 @@ public class Car extends BaseEntity {
         this.year = year;
     }
 
-    public Integer getManufacturerId(Integer manufacturer_id) {
-        return manufacturer_id;
-    }
-
-    public void setManufactureId(Integer manufacturer_id) {
-        this.manufacturer_id = manufacturer_id;
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     public Manufacturer getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer() {
-        this.manufacturer = manufacturer;
+        return this.manufacturer;
     }
 }

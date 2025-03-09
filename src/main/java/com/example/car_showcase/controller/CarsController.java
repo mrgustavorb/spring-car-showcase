@@ -1,6 +1,8 @@
 package com.example.car_showcase.controller;
 
 import com.example.car_showcase.model.Car;
+import com.example.car_showcase.model.Manufacturer;
+import com.example.car_showcase.request.CarRequest;
 import com.example.car_showcase.service.CarService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,18 @@ public class CarsController {
     }
 
     @PostMapping
-    public ResponseEntity<Car> createCar(@RequestBody Car car) {
+    public ResponseEntity<Car> createCar(@RequestBody CarRequest carRequest) {
+        Optional<Manufacturer> manufacturer = carService.getManufacturerById(carRequest.getManufacturerId());
+
+        if (manufacturer.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Return 400 if manufacturer is not found
+        }
+
+        Car car = new Car();
+        car.setManufacturer(manufacturer.get());
+        car.setName(carRequest.getName());
+        car.setYear(carRequest.getYear());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(carService.createCar(car));
     }
 

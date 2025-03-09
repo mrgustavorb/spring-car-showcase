@@ -45,11 +45,7 @@ public class Manufacturer extends BaseEntity {
         this.year = year;
     }
 
-    public Collection<Car> getCars(List<Car> cars) {
+    public List<Car> getCars() {
         return cars;
-    }
-
-    public void setCars(List<Car> cars) {
-        this.cars = cars;
     }
  }
